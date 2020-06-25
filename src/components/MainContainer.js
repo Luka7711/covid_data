@@ -95,7 +95,7 @@ export class MainContainer extends Component {
 			<div className="wrapper" style={ wrapper }>
 				<h1>Hello World</h1>
 				<p>Situation around Covid-19 {this.createTitle()} </p>
-				<input onChange={(e) => this.updateCountry(e)}/>
+				<input placeholder="country" onChange={(e) => this.updateCountry(e)}/>
 				<Result/>
 			</div>
 		)
