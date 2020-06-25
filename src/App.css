@@ -2,6 +2,14 @@ body{
   margin:20px;
 }
 
+ul{
+  padding: 0;
+}
+
+ul li{
+  list-style: none;
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;

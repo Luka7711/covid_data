@@ -6,7 +6,8 @@ import Statistics from './Statistics';
 const result = {
 	display:"flex",
 	flexDirection:"row",
-	justifyContent:"space-between"
+	justifyContent:"space-between",
+	height:"30rem"
 }
 
 export default function Result(){

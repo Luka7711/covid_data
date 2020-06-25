@@ -1,6 +1,21 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { FaAngleDown } from 'react-icons/fa';
 
+const stateContainer = {
+	display:"flex",
+	flexDirection:"column",
+	marginBottom:".5rem"
+}
+const dropDown = {
+	transform:"translateY(-100%)",
+	display:"none"
+}
+
+const wrapper = {
+	overflowY:"scroll",
+	height:"100%"
+}
 export function Statistics(props){
 	
 	let getStat = () => {
@@ -9,16 +24,18 @@ export function Statistics(props){
 		 let provinceLeng = props.country.provinces.length;
 		 let provinces = props.country.provinces;
 		 let states;
-		 if (provinceLeng > 1) {
+		 if (provinceLeng > 0) {
 		 	states = provinces.map((state, k) => {
 		 					console.log(state)
-		 					return ( <ul key={k+33}>
-		 								<li key={k+44}> { state.province } </li>
-		 								<li key={k+55}> Active: { state.active } </li>
-		 								<li key={k+66}> Confirmed: { state.confirmed } </li>
-		 								<li key={k+77}> Deaths: { state.deaths } </li>
-		 								<li key={k+88}> Recovered: { state.recovered } </li>
-		 							</ul>
+		 					return ( <div style={stateContainer} key={k+33}>
+		 								<div>{ state.province } <FaAngleDown className="dropBtn"/> </div>
+		 									<div style={dropDown}>
+		 										<div> Active: { state.active } </div>
+		 										<div> Confirmed: { state.confirmed } </div>
+		 										<div> Deaths: { state.deaths } </div>
+		 										<div> Recovered: { state.recovered } </div>
+		 									</div>
+		 							</div>
 		 					)
 		 				})
 		 }
@@ -27,7 +44,7 @@ export function Statistics(props){
 	return(
 		<div>
 			<p>Statistics on</p>
-			<div>	
+			<div style={wrapper}>	
 				{ props.country.provinces ? getStat() : null }
 			</div>
 		</div>
