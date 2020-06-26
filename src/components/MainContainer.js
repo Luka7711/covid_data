@@ -45,7 +45,7 @@ export class MainContainer extends Component {
 		if (findCountry) findFor = findCountry;
 		else findFor = this.props.country;
 
-		const url = `https://covid-19-data.p.rapidapi.com/report/country/name?date-format=YYYY-MM-DD&format=json&date=2020-04-01&name=${findFor}`;
+		const url = `https://covid-19-data.p.rapidapi.com/report/country/name?date-format=YYYY-MM-DD&format=json&date=2020-06-10&name=${findFor}`;
 		fetch(url, {
 			method:"GET",
 			headers:{
@@ -93,7 +93,7 @@ export class MainContainer extends Component {
 	
 		return(
 			<div className="wrapper" style={ wrapper }>
-				<h1>Hello World</h1>
+				<h1> Stay Home </h1>
 				<p>Situation around Covid-19 {this.createTitle()} </p>
 				<input placeholder="country" onChange={(e) => this.updateCountry(e)}/>
 				<Result/>

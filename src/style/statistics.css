@@ -1,0 +1,38 @@
+@keyframes slidein{
+	0% {
+		transform:translateY(-100%);
+	}
+	50% {
+		transform: translateY(-50);
+	}
+	100% {
+		transform: translateY(100%);
+	}
+}
+
+.drop{
+	animation: slidein;
+	transition: all 1s ease;
+}
+
+.drop > div {
+	padding:5px 0;
+	transition: all .3s ease-in;
+}
+
+.provinceContainer{
+	padding:10px 0px;
+}
+
+.provinceContainer:hover {
+	background-color: lightgrey;
+}
+
+.drop > div:hover {
+	background-color: lightgrey;
+}
+
+.mainContainer{
+	width:25%;
+	height: 100%;
+}

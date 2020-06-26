@@ -1,22 +1,32 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { FaAngleDown } from 'react-icons/fa';
+import '../style/statistics.css';
 
-const stateContainer = {
+let stateContainer = {
 	display:"flex",
 	flexDirection:"column",
-	marginBottom:".5rem"
+	marginBottom:"1rem",
+	height:"1.3rem"
 }
-const dropDown = {
+let hide = {
 	transform:"translateY(-100%)",
-	display:"none"
+	visibility:"hidden"
 }
 
-const wrapper = {
+let wrapper = {
 	overflowY:"scroll",
 	height:"100%"
 }
 export function Statistics(props){
+
+	function showStat(e){
+		let container = document.querySelector(".stateContainer");
+		let drop = document.querySelector(".drop");
+		container.style.height = "9rem";
+		drop.style = {animation:"slidein"};
+		drop.style.height = '5rem;'
+	}
 	
 	let getStat = () => {
 		 
@@ -26,23 +36,23 @@ export function Statistics(props){
 		 let states;
 		 if (provinceLeng > 0) {
 		 	states = provinces.map((state, k) => {
-		 					console.log(state)
-		 					return ( <div style={stateContainer} key={k+33}>
-		 								<div>{ state.province } <FaAngleDown className="dropBtn"/> </div>
-		 									<div style={dropDown}>
-		 										<div> Active: { state.active } </div>
-		 										<div> Confirmed: { state.confirmed } </div>
-		 										<div> Deaths: { state.deaths } </div>
-		 										<div> Recovered: { state.recovered } </div>
-		 									</div>
-		 							</div>
-		 					)
-		 				})
+		 				return (
+		 					<div className="stateContainer" style={stateContainer} key={k+33}>
+		 						<div class="provinceContainer">{ state.province } <FaAngleDown onClick={(e) => showStat(e)} className="dropBtn"/> </div>
+		 						<div className="drop" style={hide}>
+		 							<div> active: { state.active } </div>
+		 							<div> confirmed: { state.confirmed } </div>
+		 							<div> deaths: { state.deaths } </div>
+		 							<div> recovered: { state.recovered } </div>
+		 						</div>
+		 					</div>
+		 				)
+		 			})
 		 }
 		 return states;
 	}
 	return(
-		<div>
+		<div className="mainContainer">
 			<p>Statistics on</p>
 			<div style={wrapper}>	
 				{ props.country.provinces ? getStat() : null }
