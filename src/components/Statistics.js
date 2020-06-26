@@ -1,18 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { FaAngleDown } from 'react-icons/fa';
+import { FaAngleUp } from 'react-icons/fa';
 import '../style/statistics.css';
-
-let stateContainer = {
-	display:"flex",
-	flexDirection:"column",
-	marginBottom:"1rem",
-	height:"1.3rem"
-}
-let hide = {
-	transform:"translateY(-100%)",
-	visibility:"hidden"
-}
 
 let wrapper = {
 	overflowY:"scroll",
@@ -20,14 +10,26 @@ let wrapper = {
 }
 export function Statistics(props){
 
-	function showStat(e){
-		let container = document.querySelector(".stateContainer");
-		let drop = document.querySelector(".drop");
-		container.style.height = "9rem";
-		drop.style = {animation:"slidein"};
-		drop.style.height = '5rem;'
+	function toggleStat(event){
+		// toggle class which will slide down and slide up the window
+		let dropDown = event.currentTarget.nextSibling;
+		let currentClass = dropDown.getAttribute("class");
+		let container = event.currentTarget.parentNode;
+
+		if (currentClass === "slideIn") {
+			//remove slideIn and add slideOut
+			dropDown.classList.remove("slideIn");
+			dropDown.classList.add("slideOut");
+			container.style.height = "10rem";
+		} else {
+			//remove slideout and add slideIn
+			dropDown.classList.remove("slideOut");
+			dropDown.classList.add("slideIn");
+			container.style.height = "2rem";
+		}
+
 	}
-	
+
 	let getStat = () => {
 		 
 		 let date = <p> { props.country.date} </p>;
@@ -37,9 +39,11 @@ export function Statistics(props){
 		 if (provinceLeng > 0) {
 		 	states = provinces.map((state, k) => {
 		 				return (
-		 					<div className="stateContainer" style={stateContainer} key={k+33}>
-		 						<div class="provinceContainer">{ state.province } <FaAngleDown onClick={(e) => showStat(e)} className="dropBtn"/> </div>
-		 						<div className="drop" style={hide}>
+		 					<div className="stateContainer" key={k+33}>
+		 						<div onClick={(e) => toggleStat(e)} className="provinceContainer">{ state.province } 
+		 							<FaAngleUp className="upBtn"/> <FaAngleDown className="dropBtn"/> 
+		 						</div>
+		 						<div className="slideIn">
 		 							<div> active: { state.active } </div>
 		 							<div> confirmed: { state.confirmed } </div>
 		 							<div> deaths: { state.deaths } </div>

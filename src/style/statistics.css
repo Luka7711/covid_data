@@ -1,27 +1,55 @@
-@keyframes slidein{
+@keyframes slideout{
 	0% {
-		transform:translateY(-100%);
+		transform:translateY(-120%);
 	}
 	50% {
-		transform: translateY(-50);
+		transform: translateY(-50%);
 	}
 	100% {
 		transform: translateY(100%);
 	}
 }
 
-.drop{
-	animation: slidein;
-	transition: all 1s ease;
+@keyframes slidein{
+	0% {
+		transform: translateY(100%);
+	}
+	50% {
+		transform: translateY(-50%);
+	}
+	100% {
+		transform: translateY(-120%);
+	}
+}
+.stateContainer {
+	display:flex;
+	flex-direction:column;
+	margin-bottom:.5rem;
+	height:2rem;
+	transition: all .3s ease-in;
+	overflow-y: hidden;
 }
 
-.drop > div {
+.slideIn {
+	animation: slidein;
+	transition: all .3s ease-in;
+	visibility:hidden;
+	transform: translateY(-120%);
+}
+
+.slideOut{
+	animation: slideout;
+	transition: all .3s ease-in;
+}
+
+.slideOut > div {
 	padding:5px 0;
 	transition: all .3s ease-in;
 }
 
 .provinceContainer{
 	padding:10px 0px;
+	z-index:100;
 }
 
 .provinceContainer:hover {
@@ -35,4 +63,8 @@
 .mainContainer{
 	width:25%;
 	height: 100%;
+}
+
+.upBtn{
+	display: none;
 }
