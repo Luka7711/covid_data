@@ -15,3 +15,17 @@ export const saveAll = (countries) => {
 		countries: countryNames
 	}
 }
+
+export const updateProvince = (province) => {
+	return {
+		type:'updateProvince',
+		province:province
+	}
+}
+
+export const addProvinceStat = (stat) => {
+	return {
+		type: "addProvinceStat",
+		stat: stat
+	}
+}

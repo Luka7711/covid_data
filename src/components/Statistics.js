@@ -3,12 +3,36 @@ import { connect } from 'react-redux';
 import { FaAngleDown } from 'react-icons/fa';
 import { FaAngleUp } from 'react-icons/fa';
 import '../style/statistics.css';
+import { useEffect } from 'react';
 
 let wrapper = {
 	overflowY:"scroll",
 	height:"100%"
 }
 export function Statistics(props){
+	
+	useEffect(() => {
+		
+			getRecentDays();
+
+	},[]);
+
+	function getRecentDays(){
+		Date.prototype.toDateFromDays = function(daysBefore){
+			daysBefore = parseInt(daysBefore) || 0;
+			let newDate = new Date(this.getTime());
+			newDate.setDate(this.getDate() + daysBefore);
+			return newDate
+		}
+		let today = new Date();
+		let recentDates = [];
+		
+		for(let i=-7; i<0; i++){
+			let eachDay = today.toDateFromDays(i).toISOString().substr(0,10);
+			recentDates.push(eachDay);
+		}
+		console.log(recentDates);
+	}
 
 	function toggleStat(event){
 		// toggle class which will slide down and slide up the window
