@@ -4,7 +4,7 @@ import { FaAngleDown } from 'react-icons/fa';
 import { FaAngleUp } from 'react-icons/fa';
 import '../style/statistics.css';
 import { useEffect, useState } from 'react';
-import { updateProvince, addProvinceStat } from '../actions/index';
+import { updateProvince, addProvinceStat, cleanUp } from '../actions/index';
 
 let wrapper = {
 	overflowY:"scroll",
@@ -17,15 +17,19 @@ export function Statistics(props){
 		setRecentDays(getRecentDays());
 	},[]);
 
-	function combineRecentStats(provinceLng){
-		if (provinceLng > 1) {
-			// if country has provinces update
-		} else {
+	function combineRecentStats(provinceLeng){
+		let province = props.country.provinces[0].province;
+		let country = props.country.country;
+		props.cleanUp();
+	    props.updateProvince(province);
 
-		}
+	    // add stat from province for each day from recent days data
+	    for (let i=0; i < recentDays.length; i++) {
+	    	getProvinceStat(recentDays[i], country, province);
+	    }
 	}
 
-	function getProvinceStat(date, country) {
+	function getProvinceStat(date, country, province) {
 		fetch(`https://covid-19-data.p.rapidapi.com/report/country/name?date-format=YYYY-MM-DD&format=json&date=${date}&name=${country}`, {
 			method:"GET",
 			headers:{
@@ -35,6 +39,10 @@ export function Statistics(props){
 		.then(response => response.json())
 		.then(data => {
 
+			let objKeys = Object.keys(data[0].provinces[0]);
+			if (objKeys.length > 1) {
+				props.addProvinceStat(data[0].provinces[0]);
+			}
 		})
 	}
 
@@ -48,7 +56,7 @@ export function Statistics(props){
 		let today = new Date();
 		let recentDates = [];
 		
-		for(let i=-7; i<0; i++){
+		for(let i=-20; i<0; i++){
 			let eachDay = today.toDateFromDays(i).toISOString().substr(0,10);
 			recentDates.push(eachDay);
 		}
@@ -80,7 +88,7 @@ export function Statistics(props){
 		 
 		 let date = <p> { props.country.date} </p>;
 		 let provinceLeng = props.country.provinces.length;
-		 let provinces = props.country.provinces;
+		 let provinces = props.country.provinces;		 
 		 let states;
 		 	states = provinces.map((state, k) => {
 		 				return (
@@ -97,11 +105,7 @@ export function Statistics(props){
 		 					</div>
 		 				)
 		 			});
-		// update province state after searched country found
-		props.updateProvince(provinces[0].province);
-		
-		// get stats for last 7d with current province
-		
+		combineRecentStats(provinceLeng);
 		return states;
 	}
 	return(
@@ -123,7 +127,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
 	return {
 		updateProvince: (province) => dispatch(updateProvince(province)),
-		addProvinceStat: (stat) => dispatch(addProvinceStat(stat))
+		addProvinceStat: (stat) => dispatch(addProvinceStat(stat)),
+		cleanUp: () => dispatch(cleanUp())
 	}
 }
 

@@ -29,3 +29,9 @@ export const addProvinceStat = (stat) => {
 		stat: stat
 	}
 }
+
+export const cleanUp = (stat) => {
+	return {
+		type: "cleanUp"
+	}
+}
