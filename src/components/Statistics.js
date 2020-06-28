@@ -3,19 +3,40 @@ import { connect } from 'react-redux';
 import { FaAngleDown } from 'react-icons/fa';
 import { FaAngleUp } from 'react-icons/fa';
 import '../style/statistics.css';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { updateProvince, addProvinceStat } from '../actions/index';
 
 let wrapper = {
 	overflowY:"scroll",
 	height:"100%"
 }
 export function Statistics(props){
+	const [recentDays, setRecentDays] = useState([]);
 	
 	useEffect(() => {
-		
-			getRecentDays();
-
+		setRecentDays(getRecentDays());
 	},[]);
+
+	function combineRecentStats(provinceLng){
+		if (provinceLng > 1) {
+			// if country has provinces update
+		} else {
+
+		}
+	}
+
+	function getProvinceStat(date, country) {
+		fetch(`https://covid-19-data.p.rapidapi.com/report/country/name?date-format=YYYY-MM-DD&format=json&date=${date}&name=${country}`, {
+			method:"GET",
+			headers:{
+				"X-RapidAPI-Key": "d7b6266c9dmsh60f21d2416025a0p14c9f4jsn6b24624bc0e5"
+			}
+		})
+		.then(response => response.json())
+		.then(data => {
+
+		})
+	}
 
 	function getRecentDays(){
 		Date.prototype.toDateFromDays = function(daysBefore){
@@ -31,7 +52,8 @@ export function Statistics(props){
 			let eachDay = today.toDateFromDays(i).toISOString().substr(0,10);
 			recentDates.push(eachDay);
 		}
-		console.log(recentDates);
+		console.log(recentDates)
+		return recentDates
 	}
 
 	function toggleStat(event){
@@ -60,7 +82,6 @@ export function Statistics(props){
 		 let provinceLeng = props.country.provinces.length;
 		 let provinces = props.country.provinces;
 		 let states;
-		 if (provinceLeng > 0) {
 		 	states = provinces.map((state, k) => {
 		 				return (
 		 					<div className="stateContainer" key={k+33}>
@@ -75,9 +96,13 @@ export function Statistics(props){
 		 						</div>
 		 					</div>
 		 				)
-		 			})
-		 }
-		 return states;
+		 			});
+		// update province state after searched country found
+		props.updateProvince(provinces[0].province);
+		
+		// get stats for last 7d with current province
+		
+		return states;
 	}
 	return(
 		<div className="mainContainer">
@@ -95,6 +120,14 @@ const mapStateToProps = state => {
 	}
 }
 
+const mapDispatchToProps = dispatch => {
+	return {
+		updateProvince: (province) => dispatch(updateProvince(province)),
+		addProvinceStat: (stat) => dispatch(addProvinceStat(stat))
+	}
+}
+
 export default connect(
-	mapStateToProps
+	mapStateToProps,
+	mapDispatchToProps
 )(Statistics)

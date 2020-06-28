@@ -5,11 +5,11 @@ const province = (state={province:"", stats:[]}, action) => {
 		
 		case "updateProvince":
 			state.province = action.province;
-			return state.province
+			return state
 		
 		case "addProvinceStat":
 			state.stats.push(action.stat);
-			return state.stats;
+			return state
 		
 		default:
 			return state
