@@ -12,24 +12,45 @@ let wrapper = {
 }
 export function Statistics(props){
 	const [recentDays, setRecentDays] = useState([]);
-	
+	const [stopAction, setStopAction] = useState(false);
+
 	useEffect(() => {
 		setRecentDays(getRecentDays());
-	},[]);
+	},[props.country.provinces]);
 
-	function combineRecentStats(provinceLeng){
-		let province = props.country.provinces[0].province;
+	function combineRecentStats(clickedProvince, index){
+		props.cleanUp()
+
+		let currentProvince;
 		let country = props.country.country;
-		props.cleanUp();
-	    props.updateProvince(province);
 
-	    // add stat from province for each day from recent days data
-	    for (let i=0; i < recentDays.length; i++) {
-	    	getProvinceStat(recentDays[i], country, province);
-	    }
+		if (clickedProvince && clickedProvince !== props.province) {
+			props.updateProvince(clickedProvince);
+			
+			// find latest stats data of clicked province
+			for (let i=0; i < recentDays.length; i++) {
+	    		getProvinceStat(recentDays[i], country, clickedProvince, true, index);
+	   		}
+
+		} else {
+			console.log('not clicked')
+			currentProvince = props.country.provinces[0].province;
+			props.updateProvince(currentProvince);
+			
+			for (let i=0; i < recentDays.length; i++) {
+
+				if (stopAction === true) {
+					props.cleanUp();
+					break;
+				} else {
+	    			getProvinceStat(recentDays[i], country, currentProvince, false);
+				}
+	   		}
+		}
+		
 	}
 
-	function getProvinceStat(date, country, province) {
+	 function getProvinceStat(date, country, province, search, index) {
 		fetch(`https://covid-19-data.p.rapidapi.com/report/country/name?date-format=YYYY-MM-DD&format=json&date=${date}&name=${country}`, {
 			method:"GET",
 			headers:{
@@ -38,10 +59,14 @@ export function Statistics(props){
 		})
 		.then(response => response.json())
 		.then(data => {
-
 			let objKeys = Object.keys(data[0].provinces[0]);
 			if (objKeys.length > 1) {
-				props.addProvinceStat(data[0].provinces[0]);
+				// save specific province stat
+				if(search === true){
+					props.addProvinceStat(data[0].provinces[index])
+				} else {
+					props.addProvinceStat(data[0].provinces[0]);
+				}
 			}
 		})
 	}
@@ -60,11 +85,13 @@ export function Statistics(props){
 			let eachDay = today.toDateFromDays(i).toISOString().substr(0,10);
 			recentDates.push(eachDay);
 		}
-		console.log(recentDates)
 		return recentDates
 	}
 
-	function toggleStat(event){
+	function toggleStat(event, index){
+		
+		combineRecentStats(event.currentTarget.textContent, index);
+		
 		// toggle class which will slide down and slide up the window
 		let dropDown = event.currentTarget.nextSibling;
 		let currentClass = dropDown.getAttribute("class");
@@ -85,7 +112,6 @@ export function Statistics(props){
 	}
 
 	let getStat = () => {
-		 
 		 let date = <p> { props.country.date} </p>;
 		 let provinceLeng = props.country.provinces.length;
 		 let provinces = props.country.provinces;		 
@@ -93,7 +119,7 @@ export function Statistics(props){
 		 	states = provinces.map((state, k) => {
 		 				return (
 		 					<div className="stateContainer" key={k+33}>
-		 						<div onClick={(e) => toggleStat(e)} className="provinceContainer">{ state.province } 
+		 						<div onClick={(e) => {setStopAction(true); toggleStat(e, k)}} className="provinceContainer">{ state.province } 
 		 							<FaAngleUp className="upBtn"/> <FaAngleDown className="dropBtn"/> 
 		 						</div>
 		 						<div className="slideIn">
@@ -105,9 +131,10 @@ export function Statistics(props){
 		 					</div>
 		 				)
 		 			});
-		combineRecentStats(provinceLeng);
+		 	combineRecentStats();
 		return states;
 	}
+
 	return(
 		<div className="mainContainer">
 			<p>Statistics on</p>
@@ -120,7 +147,9 @@ export function Statistics(props){
 
 const mapStateToProps = state => {
 	return {
-		country: state.country[0]
+		country: state.country[0],
+		allCountries: state.allCountries,
+		province: state.province.province
 	}
 }
 
