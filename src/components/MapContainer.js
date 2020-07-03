@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function MapContainer(){
 	return (
-		<div>
+		<div className="map">
 			<p>Map Container</p>
 		</div>
 	)

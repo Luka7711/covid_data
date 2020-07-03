@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import Result from './Result'
 
 const wrapper = {
-	width:"70%",
+	width:"90%",
 	vh:"60%",
 	margin:"0 auto"
 }

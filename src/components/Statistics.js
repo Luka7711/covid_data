@@ -5,47 +5,58 @@ import { FaAngleUp } from 'react-icons/fa';
 import '../style/statistics.css';
 import { useEffect, useState } from 'react';
 import { updateProvince, addProvinceStat, cleanUp } from '../actions/index';
+import ReactDOM from 'react-dom';
+import store from '../index.js';
+
 
 let wrapper = {
-	overflowY:"scroll",
 	height:"100%"
 }
 export function Statistics(props){
 	const [recentDays, setRecentDays] = useState([]);
 	const [stopAction, setStopAction] = useState(false);
+	const [data, setData] = useState("");
 
 	useEffect(() => {
 		setRecentDays(getRecentDays());
-	},[props.country.provinces]);
+	},[]);
+
+	useEffect(() => {
+		let state = store.getState();
+		setData(state);
+	});
+
+	useEffect(() => {
+		if(typeof(data.country) === "object"){
+			getStat();
+		}
+	}, [data])
 
 	function combineRecentStats(clickedProvince, index){
-		props.cleanUp()
-
+		store.dispatch({type:"cleanUp"})
+		
 		let currentProvince;
-		let country = props.country.country;
+		let country = data.country[0].country;
 
-		if (clickedProvince && clickedProvince !== props.province) {
-			props.updateProvince(clickedProvince);
-			
-			// find latest stats data of clicked province
+		if (clickedProvince && clickedProvince !== data.province.province) {
+			// props.updateProvince(clickedProvince);
+			store.dispatch({type:"updateProvince", province:clickedProvince})
+		// find latest stats data of clicked province
 			for (let i=0; i < recentDays.length; i++) {
 	    		getProvinceStat(recentDays[i], country, clickedProvince, true, index);
 	   		}
 
-		} else {
-			console.log('not clicked')
-			currentProvince = props.country.provinces[0].province;
-			props.updateProvince(currentProvince);
-			
-			for (let i=0; i < recentDays.length; i++) {
-
-				if (stopAction === true) {
-					props.cleanUp();
-					break;
-				} else {
-	    			getProvinceStat(recentDays[i], country, currentProvince, false);
-				}
-	   		}
+		} else if(!clickedProvince) {
+			currentProvince = data.country[0].provinces[0].province;
+			store.dispatch({type:'updateProvince', province:currentProvince});
+				for (let i=0; i < recentDays.length; i++) {
+					if (stopAction === true) {
+						store.dispatch({type:'cleanUp'});
+						break;
+					} else {
+	    				getProvinceStat(recentDays[i], country, currentProvince, false);
+					}
+	   		}	
 		}
 		
 	}
@@ -58,14 +69,20 @@ export function Statistics(props){
 			}
 		})
 		.then(response => response.json())
-		.then(data => {
-			let objKeys = Object.keys(data[0].provinces[0]);
-			if (objKeys.length > 1) {
+		.then(info => {
+			
+			let objKeys = Object.keys(info[0].provinces[0]);
+
+			if (objKeys.length > 1) {	
 				// save specific province stat
-				if(search === true){
-					props.addProvinceStat(data[0].provinces[index])
+				if (search === true) {
+					let newDat = info[0].provinces[index];
+					newDat.day = date;
+					store.dispatch({type:"addProvinceStat", stat:newDat})
 				} else {
-					props.addProvinceStat(data[0].provinces[0]);
+					let newData = info[0].provinces[0];
+					newData.day = date;
+					store.dispatch({type:"addProvinceStat", stat:newData});
 				}
 			}
 		})
@@ -89,9 +106,7 @@ export function Statistics(props){
 	}
 
 	function toggleStat(event, index){
-		
 		combineRecentStats(event.currentTarget.textContent, index);
-		
 		// toggle class which will slide down and slide up the window
 		let dropDown = event.currentTarget.nextSibling;
 		let currentClass = dropDown.getAttribute("class");
@@ -111,15 +126,14 @@ export function Statistics(props){
 
 	}
 
-	let getStat = () => {
-		 let date = <p> { props.country.date} </p>;
-		 let provinceLeng = props.country.provinces.length;
-		 let provinces = props.country.provinces;		 
+	function getStat(){
+		 let date = <p> { data.country[0].date} </p>;
+		 let provinces = data.country[0].provinces;		 
 		 let states;
 		 	states = provinces.map((state, k) => {
 		 				return (
 		 					<div className="stateContainer" key={k+33}>
-		 						<div onClick={(e) => {setStopAction(true); toggleStat(e, k)}} className="provinceContainer">{ state.province } 
+		 						<div onClick={(e) => { setStopAction(true); toggleStat(e,k)}} className="provinceContainer">{ state.province } 
 		 							<FaAngleUp className="upBtn"/> <FaAngleDown className="dropBtn"/> 
 		 						</div>
 		 						<div className="slideIn">
@@ -131,37 +145,29 @@ export function Statistics(props){
 		 					</div>
 		 				)
 		 			});
-		 	combineRecentStats();
+		 let div = document.getElementById("content");
+		 ReactDOM.render(states, div);
+
+		 combineRecentStats();
 		return states;
 	}
 
 	return(
 		<div className="mainContainer">
-			<p>Statistics on</p>
-			<div style={wrapper}>	
-				{ props.country.provinces ? getStat() : null }
+			<div id="content" style={wrapper}>
 			</div>
 		</div>
 	)
 }
 
-const mapStateToProps = state => {
-	return {
-		country: state.country[0],
-		allCountries: state.allCountries,
-		province: state.province.province
-	}
-}
-
 const mapDispatchToProps = dispatch => {
 	return {
-		updateProvince: (province) => dispatch(updateProvince(province)),
-		addProvinceStat: (stat) => dispatch(addProvinceStat(stat)),
 		cleanUp: () => dispatch(cleanUp())
 	}
 }
 
 export default connect(
-	mapStateToProps,
 	mapDispatchToProps
-)(Statistics)
+)(Statistics);
+
+

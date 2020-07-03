@@ -1,0 +1,13 @@
+.chart {
+	background-color: lightblue;
+	width: 40%;
+}
+
+.map {
+	width: 40%;
+	background-color: yellow;
+}
+
+.title{
+	margin-left:10%;
+}

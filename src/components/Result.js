@@ -6,11 +6,12 @@ import Statistics from './Statistics';
 const result = {
 	display:"flex",
 	flexDirection:"row",
-	justifyContent:"space-between",
-	height:"30rem"
+	height:"30rem",
+	marginTop:"1rem"
 }
 
 export default function Result(){
+
 	return(
 		<div className="resultContainer" style={ result }>
 			<Statistics/>

@@ -14,7 +14,6 @@ const province = (state={province:"", stats:[]}, action) => {
 		case "cleanUp":
 			state.stats = []
 			return state;
-			
 		default:
 			return state
 	}
