@@ -10,4 +10,11 @@
 
 .title{
 	margin-left:10%;
+	height: 10%;
 }
+
+.title h2{
+	margin: 0;
+	font-weight: 500;
+}
+

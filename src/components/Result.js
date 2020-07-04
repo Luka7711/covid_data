@@ -11,7 +11,6 @@ const result = {
 }
 
 export default function Result(){
-
 	return(
 		<div className="resultContainer" style={ result }>
 			<Statistics/>
